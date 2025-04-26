@@ -5,4 +5,5 @@ hello_world_test
 *.gcno
 *.gcda
 *.gcov
+.vscode/
 

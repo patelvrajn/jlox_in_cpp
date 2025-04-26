@@ -12,7 +12,7 @@ objs = $(patsubst %.cpp,%.o,$(srcs))
 depends = $(patsubst %.cpp,%.d,$(srcs))
 
 # Name of project
-PROJECT_NAME = hello_world
+PROJECT_NAME = jlox_in_cpp
 
 # Compiler and compiler flags.
 CXX      = g++

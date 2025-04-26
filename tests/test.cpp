@@ -1,5 +1,4 @@
 #include "gtest/gtest.h"
-#include "hello_world.hpp"
 
 int main (int argc, char **argv) {
 
@@ -13,9 +12,4 @@ int main (int argc, char **argv) {
         std::cout << "FAILED." << std::endl;
         return 1;
     }
-}
-
-TEST(hello_world_test, test_one)
-{
-  ASSERT_EQ(print_hello_world(), 0);
 }
