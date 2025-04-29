@@ -19,6 +19,8 @@ TEST (DynamicArraySuite, InitialSize) {
     ASSERT_EQ (da->get_size(), INITIAL_SIZE);
     ASSERT_EQ (da->get_maximum_index(), (INITIAL_SIZE - 1));
 
+    delete da;
+
 }
 
 // Tests the dynamic growth of the dynamic array.
@@ -42,6 +44,8 @@ TEST (DynamicArraySuite, Upsizing) {
     // Check if size and maximum index are at their expected values.
     ASSERT_EQ (da->get_size(), EXPECTED_UPSIZE);
     ASSERT_EQ (da->get_maximum_index(), (EXPECTED_UPSIZE - 1));
+
+    delete da;
 
 }
 
@@ -80,6 +84,8 @@ TEST (DynamicArraySuite, InsertData) {
     ASSERT_EQ((*da)[4], element_to_insert);
     ASSERT_EQ((*da)[5], inserted_elements[3]);
 
+    delete da;
+
 }
 
 TEST (DynamicArraySuite, RemoveData) {
@@ -100,5 +106,7 @@ TEST (DynamicArraySuite, RemoveData) {
 
     ASSERT_EQ((*da)[0], 15);
     ASSERT_EQ((*da)[1], 7);
+
+    delete da;
 
 }

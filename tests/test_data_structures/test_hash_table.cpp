@@ -21,8 +21,46 @@ TEST (HashTableSuite, InsertData) {
     }
 
     for (std::size_t i = 0; i < NUM_OF_ELEMENTS_TO_INSERT; i++) {
-        ASSERT_EQ(ht->search(inserted_keys[i]), inserted_values[i]);
+        int* ip = ht->search(inserted_keys[i]);
+        EXPECT_EQ(*ip, inserted_values[i]);
+        delete ip;
     }
+
+    delete ht;
 
 }
 
+TEST (HashTableSuite, RemoveData) {
+
+    Hash_Table<std::string, int>* ht = new Hash_Table<std::string, int>;
+
+    ht->insert("Alex",    1);
+    ht->insert("Bob",     2);
+    ht->insert("Charlie", 3);
+    ht->insert("David",   4);
+    ht->insert("Earl",    5);
+    ht->insert("Fred",    6);
+    ht->insert("Gregory", 7);
+    ht->insert("Henry",   8);
+    ht->insert("Iris",    9);
+
+    int* ip = ht->search("Bob");
+    EXPECT_EQ(*ip, 2);
+    delete ip;
+
+    ip = ht->search("David");
+    EXPECT_EQ(*ip, 4);
+    delete ip;
+
+    ht->remove("Bob");
+    ht->remove("David");
+
+    ip = ht->search("Bob");
+    EXPECT_EQ(ip, nullptr);
+
+    ip = ht->search("David");    
+    EXPECT_EQ(ip, nullptr);
+
+    delete ht;
+
+}

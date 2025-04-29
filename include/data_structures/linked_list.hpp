@@ -205,14 +205,17 @@ template <typename T> void Linked_List<T>::insert(const T& data, std::size_t ind
             current_index++;                    
         }
 
-        /* Insert the cell between the cell at the index and the cell before it
-        by going to the cell before it and rearranging pointers. */ 
-        current_cell                  = current_cell->left;
-        cell* old_current_cell        = current_cell;       
-        to_be_inserted->left          = current_cell;    
-        to_be_inserted->right         = current_cell->right; 
-        current_cell->right           = to_be_inserted;
-        old_current_cell->right->left = to_be_inserted;
+        /* Insert the to_be_inserted cell at the index, current cell is 
+        currently at that index.
+        
+            current_cell_left <---> current_cell <---> current_cell_right
+                                ^ insert to_be_inserted 
+        
+        */
+        to_be_inserted->left      = current_cell->left;
+        to_be_inserted->right     = current_cell;
+        current_cell->left->right = to_be_inserted;
+        current_cell->left        = to_be_inserted;
 
     } else {
         return; // Should never get here.

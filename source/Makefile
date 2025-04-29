@@ -18,7 +18,7 @@ PROJECT_NAME = jlox_in_cpp
 CXX      = g++
 CXXFLAGS = \
 		   -g \
-		   -std=c++17 \
+		   -std=c++23 \
 	       -O3 \
 	       -MMD \
 	       -MP \

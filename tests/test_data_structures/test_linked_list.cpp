@@ -36,6 +36,8 @@ TEST (LinkedListSuite, InsertData) {
     ASSERT_EQ((*ll)[6], element_to_insert);
     ASSERT_EQ((*ll)[7], inserted_elements[5]);
 
+    delete ll;
+
 }
 
 TEST (LinkedListSuite, RemoveData) {
@@ -54,5 +56,7 @@ TEST (LinkedListSuite, RemoveData) {
 
     ASSERT_EQ((*ll)[0], 34);
     ASSERT_EQ((*ll)[1], 55);
+
+    delete ll;
 
 }

@@ -22,7 +22,7 @@ PROJECT_NAME = jlox_in_cpp
 CXX      = g++
 CXXFLAGS = \
 		   -g \
-		   -std=c++17 \
+		   -std=c++23 \
 		   -pthread \
 	       -O3 \
 	       -MMD \
@@ -33,6 +33,7 @@ CXXFLAGS = \
 		   -fprofile-arcs \
 		   -ftest-coverage \
 		   -fpie \
+		   -fsanitize=address,undefined \
 	       -pie \
 		   -I ../include \
 		   -I /usr/local/include/gtest/

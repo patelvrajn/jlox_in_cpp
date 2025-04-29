@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <array>
 #include <cmath>
-// #include <expected>
+#include <unordered_map>
 #include "data_structures/dynamic_array.hpp"
 #include "data_structures/linked_list.hpp"
 
@@ -47,9 +47,9 @@ template <typename K, typename V> class Hash_Table {
         // Replaces value associated with a given key with the given value.
 		void replace(const K& key, const V& value);
 
-        /* Search for a key in the hash table and returns the value associated 
-        with the key. */
-        V& search(const K& key);
+        /* Search for a key in the hash table and returns a pointer to the value 
+        associated with the key. */
+        V* search(const K& key);
 
         /***********************************************************************
         DATA STRUCTURE OPERATOR OVERLOADS
@@ -74,7 +74,7 @@ template <typename K, typename V> class Hash_Table {
 
         std::size_t size;
 
-        const uint64_t MAX_LOAD_FACTOR = 2;
+        const double MAX_LOAD_FACTOR = 3.0;
 
 };
 
@@ -127,20 +127,27 @@ template <typename K, typename V> Hash_Table<K, V>::~Hash_Table() {
 
     for (int da_i = 0; da_i <= this->ht->get_maximum_index(); da_i++) {
 
-        for (std::size_t ll_i = 0; ll_i < (*(this->ht))[da_i]->get_size(); ll_i++) {
+        if ((*(this->ht))[da_i] != nullptr) {
+            for (std::size_t ll_i = 0; ll_i < (*(this->ht))[da_i]->get_size(); ll_i++) {
 
-            // Delete cells in linked list.
-            delete (*((*(this->ht))[da_i]))[ll_i];
+                // Delete cells in linked list.
+                if ((*((*(this->ht))[da_i]))[ll_i] != nullptr) {
+                    delete (*((*(this->ht))[da_i]))[ll_i];
+                } 
 
+            }
         }
 
         // Delete linked list in the dynamic array.
-        delete (*(this->ht))[da_i];
-    
+        if ((*(this->ht))[da_i] != nullptr) {
+            delete (*(this->ht))[da_i];
+        }
     }
 
     // Delete the dynamic array.
-    delete ht;
+    if (ht != nullptr) {
+        delete ht;
+    }
 
 }
 
@@ -152,7 +159,7 @@ template <typename K, typename V> void Hash_Table<K, V>::insert(const K& key, co
     /* Check the load factor which is the number of entries (size of the hash 
     table) / number of buckets (length of dynamic array). If it is higher than 
     the maximum load factor, increase the length of the dynamic array. */
-    uint64_t load_factor = (this->size + 1) / ht->get_size();
+    double load_factor = ((double)(this->size + 1)) / ((double)ht->get_size());
 
     if (load_factor > MAX_LOAD_FACTOR) {
 
@@ -171,15 +178,18 @@ template <typename K, typename V> void Hash_Table<K, V>::insert(const K& key, co
     pair belongs to. */
     uint64_t bucket_index = hash_function(key) % ht->get_size();
 
-    if ((*(this->ht))[bucket_index] == nullptr) {
-        (*(this->ht))[bucket_index] = new Linked_List<cell*>;
-    }
+    // Place the value in the bucket only if key doesn't exist.
+    if (this->search(key) == nullptr) {
 
-    // Place the value in the bucket. TODO: Only if key doesn't exist.
-    cell* cell_to_be_inserted  = new cell;
-    cell_to_be_inserted->key   = key;
-    cell_to_be_inserted->value = value;
-    (*(this->ht))[bucket_index]->insert(cell_to_be_inserted);
+        if ((*(this->ht))[bucket_index] == nullptr) {
+            (*(this->ht))[bucket_index] = new Linked_List<cell*>;
+        }
+
+        cell* cell_to_be_inserted  = new cell;
+        cell_to_be_inserted->key   = key;
+        cell_to_be_inserted->value = value;
+        (*(this->ht))[bucket_index]->insert(cell_to_be_inserted);
+    }
 
     this->size++;
 
@@ -197,12 +207,16 @@ template <typename K, typename V> void Hash_Table<K, V>::remove(const K& key) {
         uint64_t bucket_index = hash_function(key) % divided_size;
 
         // Look thru linked list at index for the key.
-        for (int i = 0; i < (*((*(this->ht))[bucket_index])).get_size(); i++) {
-            if ((*((*(this->ht))[bucket_index]))[i]->key == key) {
+        if (((*(this->ht))[bucket_index]) != nullptr) {
+            for (int i = 0; i < (*((*(this->ht))[bucket_index])).get_size(); i++) {
+                if ((*((*(this->ht))[bucket_index]))[i]->key == key) {
 
-                (*((*(this->ht))[bucket_index])).remove(i);
-                return;
+                    delete (*((*(this->ht))[bucket_index]))[i];
+                    (*((*(this->ht))[bucket_index])).remove(i);
+                    this->size--;
+                    return;
 
+                }
             }
         }
 
@@ -224,7 +238,7 @@ template <typename K, typename V> void Hash_Table<K, V>::replace(const K& key, c
     insert(key, value);
 }
 
-template <typename K, typename V> V& Hash_Table<K, V>::search(const K& key) {
+template <typename K, typename V> V* Hash_Table<K, V>::search(const K& key) {
 
     uint64_t size_divisor_power = 0;
 
@@ -240,21 +254,34 @@ template <typename K, typename V> V& Hash_Table<K, V>::search(const K& key) {
         uint64_t expected_bucket_index = (hash_function(key) % ht->get_size());
 
         // Look thru linked list at index for the key.
-        for (int i = 0; i < (*((*(this->ht))[bucket_index])).get_size(); i++) {
-            if ((*((*(this->ht))[bucket_index]))[i]->key == key) {
+        if (((*(this->ht))[bucket_index]) != nullptr) {
+            for (int i = 0; i < (*((*(this->ht))[bucket_index])).get_size(); i++) {
 
-                V& return_val = (*((*(this->ht))[bucket_index]))[i]->value;
+                if ((*((*(this->ht))[bucket_index]))[i]->key == key) {
 
-                /* Lazy rehashing - move the key-value pair to the expected
-                bucket index. We only move the key-value pairs being searched 
-                for instead of having to do a huge copy on growth of the hash 
-                table. */
-                if (expected_bucket_index != bucket_index) {
-                    (*(this->ht))[expected_bucket_index]->insert((*((*(this->ht))[bucket_index]))[i]);
-                    (*((*(this->ht))[bucket_index])).remove(i);
+                    V value = (*((*(this->ht))[bucket_index]))[i]->value;
+
+                    // Get a heap-allocated pointer to the value to return. 
+                    V* return_val = new V;
+                    *return_val = value;
+
+                    /* Lazy rehashing - move the key-value pair to the expected
+                    bucket index. We only move the key-value pairs being searched 
+                    for instead of having to do a huge copy on growth of the hash 
+                    table. */
+                    if (expected_bucket_index != bucket_index) {
+
+                        if ((*(this->ht))[expected_bucket_index] == nullptr) {
+                            (*(this->ht))[expected_bucket_index] = new Linked_List<cell*>;
+                        }
+                        
+                        (*(this->ht))[expected_bucket_index]->insert((*((*(this->ht))[bucket_index]))[i]);
+                        (*((*(this->ht))[bucket_index])).remove(i);
+
+                    }
+
+                    return return_val;
                 }
-
-                return return_val;
             }
         }
 
@@ -268,7 +295,7 @@ template <typename K, typename V> V& Hash_Table<K, V>::search(const K& key) {
 
     }
 
-    // Need std::expected<reference, missing_key_error>;
+    return nullptr;
 
 }
 
@@ -301,24 +328,8 @@ template <typename K, typename V> Hash_Table<K, V>& Hash_Table<K, V>::operator =
 /*******************************************************************************
 HASH FUNCTION
 *******************************************************************************/
-template <typename K, typename V> uint64_t Hash_Table<K, V>::hash_function(const K& key) {
+template <typename K, typename V> std::size_t Hash_Table<K, V>::hash_function(const K& key) {
 
-    // Convert the key of type K to an array of bytes.
-    std::array<uint8_t, sizeof(key)> bytes;
-    const uint8_t* begin_bytes = reinterpret_cast<const uint8_t*>(std::addressof(key));
-    const uint8_t* end_bytes   = begin_bytes + sizeof(key);
-    std::copy(begin_bytes, end_bytes, std::begin(bytes));
-
-    // Perform FNV-1a hashing algorithm.
-    const uint64_t FNV_PRIME = 1099511628211;
-    uint64_t hash            = 14695981039346656037UL;
-    for (uint8_t octet_of_data : bytes) {
-
-        hash = hash ^ octet_of_data;
-        hash = hash * FNV_PRIME;
-
-    }
-
-    return hash;
+    return std::hash<K>{}(key);
 
 }
