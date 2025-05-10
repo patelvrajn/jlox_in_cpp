@@ -70,8 +70,8 @@ class Hash_Table {
 
   std::size_t size;
 
-  constexpr double MAX_LOAD_FACTOR = 3.0;
-  constexpr std::size_t DYNAMIC_HASH_TABLE_RESIZE_FACTOR = 2;
+  const double MAX_LOAD_FACTOR = 3.0;
+  const std::size_t DYNAMIC_HASH_TABLE_RESIZE_FACTOR = 2;
 };
 
 /*******************************************************************************

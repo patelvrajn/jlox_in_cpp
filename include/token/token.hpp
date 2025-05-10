@@ -51,7 +51,9 @@ std::string token_type_to_str(Token_Type tt);
 
 class Token {
  public:
-  Token(Token_Type type, std::string& lexeme, std::any& literal, uint64_t line);
+  Token() = default;
+  Token(Token_Type type, const std::string& lexeme, const std::any& literal,
+        uint64_t line);
 
   std::string to_string() const;
 

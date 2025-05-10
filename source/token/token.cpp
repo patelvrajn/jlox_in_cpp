@@ -47,11 +47,13 @@ std::string token_type_to_str(Token_Type tt) {
     ENUM_TO_STR(Token_Type::TT_EOF);
   }
 
+#undef ENUM_TO_STR
+
   return std::string("");
 }
 
-Token::Token(Token_Type type, std::string& lexeme, std::any& literal,
-             uint64_t line) {
+Token::Token(Token_Type type, const std::string& lexeme,
+             const std::any& literal, uint64_t line) {
   this->type = type;
   this->lexeme = lexeme;
   this->literal = literal;
@@ -60,6 +62,6 @@ Token::Token(Token_Type type, std::string& lexeme, std::any& literal,
 
 std::string Token::to_string() const {
   std::string s =
-      "type: " + token_type_to_str(this->type) + "lexeme: " + this->lexeme;
+      "type: " + token_type_to_str(this->type) + " lexeme: " + this->lexeme;
   return s;
 }

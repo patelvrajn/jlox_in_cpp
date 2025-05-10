@@ -5,14 +5,18 @@
 #include <sstream>
 
 #include "data_structures/dynamic_array.hpp"
-#include "data_structures/hash_table.hpp"
+#include "scanner/scanner.hpp"
+#include "token/token.hpp"
 
-uint64_t runFile(const std::string& file_path, Error_Reporter& e) {
+uint64_t run_file(const std::string& file_path, Error_Reporter& e) {
+  // Get file contents as a string.
   std::ifstream file(file_path);
   std::ostringstream oss;
   oss << file.rdbuf();
   file.close();
-  run(oss.str());
+
+  // Execute the code in the file.
+  run(oss.str(), e);
 
   if (e.had_error) {
     return 65;
@@ -21,23 +25,28 @@ uint64_t runFile(const std::string& file_path, Error_Reporter& e) {
   return 0;
 }
 
-void runPrompt(Error_Reporter& e) {
+void run_prompt(Error_Reporter& e) {
   while (true) {
     std::string line;
 
-    std::cout << "> " << std::endl;
+    std::cout << "> ";
     std::getline(std::cin, line);
 
     if (line.empty()) {
       break;
     }
 
-    run(line);
+    run(line, e);
 
     e.had_error = false;
   }
 }
 
-void run(const std::string& source) {
-  // TODO.
+void run(const std::string& source, Error_Reporter& e) {
+  Scanner s(source, e);
+  Dynamic_Array<Token> tokens = s.scan_tokens();
+
+  for (Token token : tokens) {
+    std::cout << token.to_string() << std::endl;
+  }
 }

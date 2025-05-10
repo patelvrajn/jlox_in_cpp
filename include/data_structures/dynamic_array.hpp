@@ -55,6 +55,13 @@ class Dynamic_Array {
   // Returns the maximum index of the dynamic array.
   int get_maximum_index();
 
+  /*****************************************************************************
+  BEGIN AND END ITERATORS
+  *****************************************************************************/
+  T* begin();
+
+  T* end();
+
   /*************************************************************************
   DATA STRUCTURE OPERATIONS
   *************************************************************************/
@@ -214,13 +221,26 @@ int Dynamic_Array<T>::get_maximum_index() {
 }
 
 /*******************************************************************************
+BEGIN AND END ITERATORS
+*******************************************************************************/
+template <typename T>
+T* Dynamic_Array<T>::begin() {
+  return &(this->array[0]);
+}
+
+template <typename T>
+T* Dynamic_Array<T>::end() {
+  return &(this->array[this->maximum_index]);
+}
+
+/*******************************************************************************
 DATA STRUCTURE OPERATIONS
 *******************************************************************************/
 template <typename T>
 void Dynamic_Array<T>::insert(const T& data, int index) {
   // Check if the dynamic array's size needs to be resized for another
   // element to be inserted.
-  if (this->maximum_index + 1 >= this->size) {
+  if (((std::size_t)(this->maximum_index + 1)) >= this->size) {
     resize();
   }
 
