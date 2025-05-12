@@ -1,5 +1,7 @@
 #include <stddef.h>
 
+#include <stdexcept>
+
 /*******************************************************************************
 Template declarations and definitions must be kept in header only to avoid
 linking errors.
